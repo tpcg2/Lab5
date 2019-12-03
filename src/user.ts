@@ -23,7 +23,7 @@ export class User {
       }
     
       public setPassword(toSet: string): void {
-        // Hash and set password
+        this.password = toSet
       }
     
       public getPassword(): string {

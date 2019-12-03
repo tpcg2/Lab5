@@ -1,4 +1,7 @@
 <div id="form">
+        <head>
+                <% include partials/head %>
+            </head>
     <p>Please login to your account</p>
     <hr/>
     <form action="/login" method="post">
@@ -14,7 +17,9 @@
         <label for="form_password">Password</label>
         <input id="form_password" type="password" name="password" />
       </div>
-      <button class="btn btn-primary btn-block" type="submit" value="Submit">Sign in </button>
+      <button class="btn btn-primary btn-block" type="submit" value="Submit">
+          Sign in 
+        </button>
     </form>
     <hr/>
     <button class="btn btn-success btn-block" type="submit" href="/signup" onClick='document.location.href="/signup"'>

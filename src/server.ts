@@ -5,6 +5,7 @@ import bodyparser = require('body-parser')
 import session = require('express-session')
 import levelSession = require('level-session-store')
 import { UserHandler, User } from './user'
+import morgan = require('morgan')
 
 const app = express()
 const port: string = process.env.PORT || '8082'
@@ -15,6 +16,7 @@ app.set('view engine', 'ejs');
 
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded())
+app.use(morgan('dev'))
 
 app.get('/', (req: any, res: any) => {
   res.write('Hello world')
