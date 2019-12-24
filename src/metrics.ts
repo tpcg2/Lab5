@@ -79,7 +79,7 @@ export class MetricsHandler {
       })
   }
 
-  public delete(key: number, metrics: Metric[], callback: (error: Error | null) => void) {
+  public delete(key: String, metrics: Metric[], callback: (error: Error | null) => void) {
     const stream = WriteStream(this.db, { type: 'del' })
     stream.on('error', callback)
     stream.on('close', callback)

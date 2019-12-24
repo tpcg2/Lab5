@@ -56,11 +56,11 @@ app.get('/show', (req: any, res: any) => {
     })
 })
 
-app.delete('/delete', (req: any, res: any) => {
+app.post('/erase', (req: any, res: any) => {
   dbMet.delete(
-    req.params.name, req.body, (err: Error | null) => {
+    id,[new Metric(req.body.timestamp,req.body.value)], (err: Error | null) => {
       if (err) throw err
-      res.status(200).send('ok')
+      res.redirect('/index')
     })
 })
 
@@ -104,6 +104,10 @@ authRouter.get('/addmetric', (req: any, res: any) => {
 
 authRouter.get('/showmetrics', (req: any, res: any) => {
   res.render('showmetric')
+})
+
+authRouter.get('/delete', (req: any, res: any) => {
+  res.render('delete')
 })
 
 authRouter.get('/logout', (req: any, res: any) => {
