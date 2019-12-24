@@ -2,26 +2,12 @@
 
 ## Introduction
 
-The basic Node.js application on TypeScript.
+This is the project of Nodejs done by Guillaume CARRABIN and Thomas GEORGE
 
-## Installing
+## How to run the programm
 
-```bash
-git clone https://github.com/sergkudinov/ece-nodejs-2-typescript.git
-cd ece-nodejs-2-typescript
-npm install
-```
-
-## Build
-
-```bash
-npm run build
-```
-
-## Development
-
-```bash
-npm run dev
-```
+To be able to run the programm, just writte "npm run dev" on your console and after that open on Google Chrome the localhost:8082/login. After that just follow the instruction.
 
 ## Contributors
+
+Guillaume CARRABIN and Thomas GEORGE
