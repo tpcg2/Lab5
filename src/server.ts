@@ -1,14 +1,16 @@
 import express = require('express')
-import { MetricsHandler } from './metrics'
+import { MetricsHandler, Metric } from './metrics'
 import path = require('path')
 import bodyparser = require('body-parser')
 import session = require('express-session')
 import levelSession = require('level-session-store')
 import { UserHandler, User } from './user'
 import morgan = require('morgan')
+import { SSL_OP_EPHEMERAL_RSA } from 'constants'
 
 const app = express()
 const port: string = process.env.PORT || '8082'
+var id ='';
 app.use(express.static(path.join(__dirname, '/../public')))
 
 app.set('views', __dirname + "/../views")
@@ -24,40 +26,42 @@ app.get('/', (req: any, res: any) => {
 })
 
 app.get('/hello/:name', (req: any, res: any) => {
-  res.render('index.ejs', {name: req.params.name})
+  res.render('index.ejs', { name: req.params.name })
 })
+
+/* Metrics part */
 
 const dbMet: MetricsHandler = new MetricsHandler('./db/metrics')
 
-app.post('/metrics/:id', (req: any, res: any) => {
-  dbMet.save(req.params.id, req.body, (err: Error | null) => {
+app.post('/addmetrics', (req: any, res: any) => {
+  dbMet.save(id, [new Metric(""+Math.random()*1000,req.body.value)] , (err: Error | null) => {
     if (err) throw err
-    res.status(200).send('ok')
+    res.redirect('/index')
   })
 })
 
 app.get('/metrics/', (req: any, res: any) => {
   dbMet.getAll(
-    (err: Error | null , result: any) => {
-    if (err) throw err
-    res.status(200).send(result)
-  })
+    (err: Error | null, result: any) => {
+      if (err) throw err
+      res.status(200).send(result)
+    })
 })
 
-app.get('/metrics/:name', (req: any, res: any) => {
+app.get('/show', (req: any, res: any) => {
   dbMet.get1(
-    req.params.name,(err: Error | null , result: any) => {
-    if (err) throw err
-    res.status(200).send(result)
-  })
+    id, (err: Error | null, result: any) => {
+      if (err) throw err
+      res.status(200).send(result)
+    })
 })
 
-app.delete('/metrics/:name', (req: any, res: any) => {
+app.delete('/delete', (req: any, res: any) => {
   dbMet.delete(
     req.params.name, req.body, (err: Error | null) => {
-    if (err) throw err
-    res.status(200).send('ok')
-  })
+      if (err) throw err
+      res.status(200).send('ok')
+    })
 })
 
 app.listen(port, (err: Error) => {
@@ -86,15 +90,29 @@ authRouter.get('/login', (req: any, res: any) => {
   res.render('login')
 })
 
+authRouter.get('/index', (req: any, res: any) => {
+  res.render('index')
+})
+
 authRouter.get('/signup', (req: any, res: any) => {
   res.render('signup')
+})
+
+authRouter.get('/addmetric', (req: any, res: any) => {
+  res.render('addmetric')
+})
+
+authRouter.get('/showmetrics', (req: any, res: any) => {
+  res.render('showmetric')
 })
 
 authRouter.get('/logout', (req: any, res: any) => {
   delete req.session.loggedIn
   delete req.session.user
-  res.redirect('/login')
+  res.redirect('login')
 })
+
+
 
 app.post('/login', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, (err: Error | null, result?: User) => {
@@ -104,7 +122,8 @@ app.post('/login', (req: any, res: any, next: any) => {
     } else {
       req.session.loggedIn = true
       req.session.user = result
-      res.redirect('/')
+      id=req.body.username
+      res.redirect('/index')
     }
   })
 })
@@ -112,30 +131,30 @@ app.post('/login', (req: any, res: any, next: any) => {
 app.use(authRouter)
 const userRouter = express.Router()
 
-  userRouter.post('/', (req: any, res: any, next: any) => {
-    dbUser.get(req.body.username, function (err: Error | null, result?: User) {
-      if (!err || result !== undefined) {
-       res.status(409).send("user already exists")
-      } else {
-        dbUser.save(req.body, function (err: Error | null) {
+userRouter.post('/', (req: any, res: any, next: any) => {
+  dbUser.get(req.body.username, function (err: Error | null, result?: User) {
+    if (!err || result !== undefined) {
+      res.status(409).send("user already exists")
+    } else {
+      dbUser.save(req.body, function (err: Error | null) {
 
-if (err) next(err)
+        if (err) next(err)
 
-else res.status(201).send("user persisted")
-        })
-      }
-    })
+        else res.status(201).send("user persisted")
+      })
+    }
   })
+})
 
-  userRouter.get('/:username', (req: any, res: any, next: any) => {
-    dbUser.get(req.params.username, function (err: Error | null, result?: User) {
-      if (err || result === undefined) {
-        res.status(404).send("user not found")
-      } else res.status(200).json(result)
-    })
+userRouter.get('/:username', (req: any, res: any, next: any) => {
+  dbUser.get(req.params.username, function (err: Error | null, result?: User) {
+    if (err || result === undefined) {
+      res.status(404).send("user not found")
+    } else res.status(200).json(result)
   })
+})
 
-  app.use('/user', userRouter)
+app.use('/user', userRouter)
 
 
 const authCheck = function (req: any, res: any, next: any) {
@@ -146,4 +165,20 @@ const authCheck = function (req: any, res: any, next: any) {
 
 app.get('/', authCheck, (req: any, res: any) => {
   res.render('index', { name: req.session.username })
+  res.write("azertyuiop")
+})
+
+app.post('/src/user.ts',(req: any, res: any) => {
+  dbUser.save(new User(req.params.username,req.params.email,req.params.password,false), (err: Error | null) => {
+    if (err) throw err
+    res.redirect('/index')
+  })
+})
+
+app.get('/user/:name', (req: any, res: any) => {
+  dbUser.get(
+    req.params.name, (err: Error | null, result: any) => {
+      if (err) throw err
+      res.status(200).send(result)
+    })
 })

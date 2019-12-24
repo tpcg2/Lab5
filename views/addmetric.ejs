@@ -1,0 +1,18 @@
+<div id="form">
+
+    <head>
+      <% include partials/head %>
+    </head>
+    <p>Please enter the values you want to add</p>
+    <hr />
+    <form action="/addmetrics" method="post">
+      <div class="form-group">
+        <label for="form_value">Value</label>
+        <input id="form_value" type="int" name="value" />
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" value="Submit">
+        Add metric
+      </button>
+    </form>
+    <hr />
+  </div>

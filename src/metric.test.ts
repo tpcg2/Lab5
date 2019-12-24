@@ -5,7 +5,7 @@ import { LevelDB } from "./leveldb"
 const dbPath: string = 'db_test'
 var dbMet: MetricsHandler
 
-describe('Metrics', function () {
+describe('Testing Metrics \n', function () {
   before(function () {
     LevelDB.clear(dbPath)
     dbMet = new MetricsHandler(dbPath)

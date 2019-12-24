@@ -1,0 +1,18 @@
+<div id="form">
+
+    <head>
+      <% include partials/head %>
+    </head>
+    <p>Please enter the timestamp you want to see</p>
+    <hr />
+    <form action="/show" method="get">
+      <div class="form-group">
+        <label for="form_timestamp">Value</label>
+        <input id="form_timestamp" type="number" name="value" />
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" value="Submit">
+        Show
+      </button>
+    </form>
+    <hr />
+  </div>
